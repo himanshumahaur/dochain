@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Hello World Smart Contract</title>
+</head>
+<body>
+  <h1>Hello World Smart Contract</h1>
+  <p>Current Message: <span id="currentMessage"></span></p>
+  <form id="setMessageForm">
+    <input type="text" id="newMessage" placeholder="Enter new message">
+    <button type="submit">Set Message</button>
+  </form>
+  <p>Transaction Hash: <span id="transactionHash"></span></p>
+
+  <script>
+    const setMessageForm = document.getElementById('setMessageForm');
+    const newMessageInput = document.getElementById('newMessage');
+    const currentMessageSpan = document.getElementById('currentMessage');
+    const transactionHashSpan = document.getElementById('transactionHash');
+
+    setMessageForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const newMessage = newMessageInput.value;
+
+      const response = await fetch('/setMessage', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ newMessage }),
+      });
+
+      const data = await response.json();
+      transactionHashSpan.textContent = data.transactionHash;
+
+      // Refresh the current message
+      const messageResponse = await fetch('/getMessage');
+      const messageData = await messageResponse.json();
+      currentMessageSpan.textContent = messageData.message;
+    });
+
+    // Initialize current message
+    async function getCurrentMessage() {
+      const response = await fetch('/getMessage');
+      const data = await response.json();
+      currentMessageSpan.textContent = data.message;
+    }
+
+    getCurrentMessage();
+  </script>
+</body>
+</html>
